@@ -1,0 +1,21 @@
+# Docker hosting. Behind a Traefik reverse proxy that terminates HTTPS, these labels publish the
+# module at https://__DOMAIN__. With another proxy, drop the labels and route __DOMAIN__ to the port.
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false     # optional secrets and settings; a missing .env must not stop `up`
+    environment:
+      PUBLIC_ORIGIN: https://__DOMAIN__
+    volumes:
+      - data:/data          # node:sqlite database and uploads (DB_PATH=/data/app.db) survive rebuilds
+    ports:
+      - "127.0.0.1::__PORT__"   # loopback, random host port: Traefik routes to it
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.__SLUG__.rule: Host(`__DOMAIN__`)
+
+volumes:
+  data:

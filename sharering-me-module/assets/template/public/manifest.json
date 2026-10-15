@@ -1,0 +1,23 @@
+{
+  "name": "__MODULE_NAME__",
+  "short_name": "__SHORT_NAME__",
+  "short_description": "__SHORT_DESCRIPTION__",
+  "description": "__DESCRIPTION__",
+  "display": "standalone",
+  "start_url": "https://__DOMAIN__/",
+  "version": "1.0.0",
+  "operation_mode": "online",
+  "webview_version": "WEB_VIEW_V2",
+  "background_color": "#050a20",
+  "theme_color": "#050a20",
+  "icons": [
+    { "src": "./icon-106.png", "sizes": "106x106", "type": "image/png" },
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "offline_mode": false,
+  "zip_name": "",
+  "checksum": "",
+  "isMaintenance": false,
+  "enable_secure_screen": false
+}

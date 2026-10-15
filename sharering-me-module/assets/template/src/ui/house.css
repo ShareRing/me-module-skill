@@ -1,0 +1,86 @@
+/* ShareRing house style ("cinema"), as on sharering.network: a ground that travels between scene
+   colours, a drifting glow field, a near-invisible glyph grid, mint accents, glass cards and
+   fade-up reveals. Values follow the site's tokens.css / house-style.css / scene-kit.css. */
+
+@property --srk-bg { syntax: '<color>'; inherits: true; initial-value: #050a20; }
+@property --srk-accent-live { syntax: '<color>'; inherits: true; initial-value: #2ce5a7; }
+
+:root {
+  --srh-navy-deep: #010229;
+  --srh-navy: #0a1f44;
+  --srh-ground: #050a20;
+  --srh-navy-mid: #0a2472;
+  --srh-accent: #2ce5a7;
+  --srh-accent-ink: #02311f;
+  --srh-ink: #eaf0ff;
+  --srh-pale: #edf3ff;
+  --srh-lapis: #3458e0;
+  --srh-blue: #4d8aff;
+  --srh-cta: #010ed0;
+  --srh-warm: #f0b366;
+  --srk-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --srk-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Route-level journeys ease the ground between scenes rather than cutting. */
+  transition: --srk-bg 900ms var(--srk-ease), --srk-accent-live 900ms var(--srk-ease);
+}
+
+/* --- the three backdrop layers -------------------------------------------------------------- */
+.srh-ground { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--srk-bg, var(--srh-ground)); }
+.srh-glow {
+  position: fixed; inset: -20%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 26% 22%, color-mix(in srgb, var(--srh-lapis) 16%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 74% 74%, color-mix(in srgb, var(--srk-accent-live, var(--srh-accent)) 15%, transparent) 0%, transparent 60%);
+  animation: srh-drift 67s var(--srk-ease) infinite alternate;
+}
+.srh-glow::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 58% 8%, color-mix(in srgb, var(--srh-navy-mid) 30%, transparent) 0%, transparent 50%);
+  animation: srh-drift-slow 89s var(--srk-ease) infinite alternate;
+}
+@keyframes srh-drift { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(6vw, -4vw) scale(1.12); } }
+@keyframes srh-drift-slow { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-5vw, 6vw) scale(1.08); } }
+
+.srh-grid {
+  position: fixed; inset: -25% 0 auto 0; height: 150vh; z-index: 0; pointer-events: none;
+  display: grid; grid-template-columns: repeat(var(--srh-cols, 6), 1fr); grid-auto-rows: calc(100vw / var(--srh-cols, 6));
+  transform: translate3d(0, calc(var(--srk-parallax, 0px) * -1), 0);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, rgba(0, 0, 0, 0.5) 68%, transparent 96%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, rgba(0, 0, 0, 0.5) 68%, transparent 96%);
+}
+.srh-cell {
+  display: flex; align-items: center; justify-content: center;
+  background-color: color-mix(in srgb, var(--srk-accent-live, var(--srh-accent)) 3%, var(--srk-bg, var(--srh-ground)));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--srh-ink) 5%, transparent);
+}
+.srh-cell:nth-child(7n + 3), .srh-cell:nth-child(11n + 5) { background-color: color-mix(in srgb, var(--srk-accent-live, var(--srh-accent)) 6%, var(--srk-bg, var(--srh-ground))); }
+.srh-cell:nth-child(13n + 8) { background-color: color-mix(in srgb, var(--srh-lapis) 8%, var(--srk-bg, var(--srh-ground))); }
+.srh-cell svg { width: min(42%, 54px); height: auto; color: color-mix(in srgb, var(--srh-ink) 9%, transparent); }
+.srh-cell:nth-child(7n + 3) svg { color: color-mix(in srgb, var(--srk-accent-live, var(--srh-accent)) 22%, transparent); }
+@media (min-width: 600px) { .srh-grid { --srh-cols: 8; } }
+
+/* Light theme keeps the structure, on a pale ground. */
+[data-theme='light'] .srh-ground { background: color-mix(in srgb, var(--srk-bg) 6%, #f4f6ff); }
+[data-theme='light'] .srh-glow { opacity: 0.5; }
+[data-theme='light'] .srh-cell { background-color: transparent; box-shadow: inset 0 0 0 1px rgba(10, 31, 68, 0.05); }
+[data-theme='light'] .srh-cell svg { color: rgba(10, 31, 68, 0.06); }
+
+/* --- type and marks -------------------------------------------------------------------------------- */
+.srk-eyebrow { display: block; font-size: 12.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--srk-accent-live, var(--srh-accent)); }
+.srk-accent, .srk-mark { color: var(--srk-accent-live, var(--srh-accent)); }
+.srk-mark { font-weight: 600; }
+[data-theme='light'] .srk-eyebrow, [data-theme='light'] .srk-accent, [data-theme='light'] .srk-mark { color: color-mix(in srgb, var(--srk-accent-live) 55%, #0a1f44); }
+
+/* --- reveal ------------------------------------------------------------------------------------------ */
+.js-reveal .srk-reveal { opacity: 0; transform: translateY(18px); transition: opacity 700ms var(--srk-ease), transform 700ms var(--srk-ease); }
+.js-reveal .srk-reveal.is-in { opacity: 1; transform: none; }
+
+/* --- chevron -------------------------------------------------------------------------------------------- */
+.srk-chev { display: block; margin: 0 auto; color: color-mix(in srgb, var(--srh-ink) 70%, transparent); animation: srk-chev 1.8s ease-in-out infinite; }
+@keyframes srk-chev { 0%, 100% { transform: translateY(0); opacity: 0.55; } 50% { transform: translateY(6px); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .srh-glow, .srh-glow::after, .srk-chev { animation: none; }
+  .srh-grid { transform: none; }
+  .js-reveal .srk-reveal { opacity: 1; transform: none; transition: none; }
+}

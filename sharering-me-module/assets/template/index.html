@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <!-- The app runs this full-screen in a WebView, notch included. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#050a20" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icon-192.png" />
+    <title>__MODULE_NAME__</title>
+    <!-- Link previews: a shared module URL opened outside the app lands on the Get ShareRing Me page. -->
+    <meta name="description" content="__SHORT_DESCRIPTION__ Open it in the ShareRing Me app." />
+    <meta property="og:title" content="__MODULE_NAME__" />
+    <meta property="og:description" content="__SHORT_DESCRIPTION__ Open it in the ShareRing Me app." />
+    <meta property="og:image" content="https://__DOMAIN__/icon-512.png" />
+    <meta property="og:url" content="https://__DOMAIN__/" />
+    <meta name="twitter:card" content="summary" />
+    <style>
+      /* The splash: ShareRing's house backdrop and the product lockup, painted before any JS runs,
+         so a slow bridge or network never shows a white page. src/main.tsx fades it out. */
+      html, body, #app { height: 100%; margin: 0; background: #050a20; }
+      #boot { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; overflow: hidden; background: #050a20; color: #edf3ff; font-family: 'Inter Tight', system-ui, -apple-system, sans-serif; transition: opacity 600ms cubic-bezier(.22,1,.36,1), transform 600ms cubic-bezier(.22,1,.36,1); }
+      #boot.out { opacity: 0; transform: scale(1.04); pointer-events: none; }
+      #boot .glow { position: absolute; inset: -20%; background: radial-gradient(circle at 26% 22%, rgba(52,88,224,.22), transparent 55%), radial-gradient(circle at 74% 74%, rgba(44,229,167,.16), transparent 60%); animation: drift 12s ease-in-out infinite alternate; }
+      #boot .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(234,240,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(234,240,255,.05) 1px, transparent 1px); background-size: calc(100vw / 6) calc(100vw / 6); -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse at 50% 50%, #000 20%, transparent 75%); }
+      #boot .lock { position: relative; display: grid; justify-items: center; gap: 14px; animation: rise 900ms cubic-bezier(.22,1,.36,1) both; }
+      #boot small { font-size: 11.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #2ce5a7; }
+      #boot b { font-size: 30px; font-weight: 500; letter-spacing: -.01em; }
+      #boot .bar { width: 140px; height: 2px; border-radius: 2px; background: rgba(234,240,255,.12); overflow: hidden; }
+      #boot .bar::after { content: ''; display: block; width: 40%; height: 100%; background: #2ce5a7; box-shadow: 0 0 12px #2ce5a7; animation: sweep 1.1s cubic-bezier(.6,0,.4,1) infinite; }
+      @keyframes drift { to { transform: translate(4vw, -3vw) scale(1.1); } }
+      @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+      @keyframes sweep { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+      @media (prefers-reduced-motion: reduce) { #boot *, #boot *::after { animation: none !important; } }
+    </style>
+  </head>
+  <body>
+    <div id="boot" aria-label="__MODULE_NAME__ is starting">
+      <div class="glow"></div>
+      <div class="grid"></div>
+      <div class="lock"><small>ShareRing</small><b>__MODULE_NAME__</b><div class="bar"></div></div>
+    </div>
+    <div id="app"></div>
+    <noscript><p style="position:fixed;inset:auto 24px 40px;z-index:101;text-align:center;color:#edf3ff;font-family:system-ui,sans-serif">__MODULE_NAME__ runs inside the ShareRing Me app. Get it on the <a style="color:#2ce5a7" href="https://apps.apple.com/us/app/sharering-me/id6476899324">App Store</a> or <a style="color:#2ce5a7" href="https://play.google.com/store/apps/details?id=network.sharering.me">Google Play</a>.</p></noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

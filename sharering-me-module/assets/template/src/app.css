@@ -1,0 +1,109 @@
+/* Base layout and components. Phone first; foldables, tablets and landscape get a side rail at
+   (min-width: 600px) and (min-aspect-ratio: 5/6). The PAGE never scrolls; only .main does. */
+
+:root {
+  --font: 'Inter Tight', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  /* Safe areas: env() on most builds; --sat is overwritten from COMMON_STATUS_BAR_DIMENSIONS. */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --text: #edf3ff;
+  --text-2: rgba(234, 240, 255, 0.72);
+  --text-3: rgba(234, 240, 255, 0.52);
+  --accent: var(--srk-accent-live, #2ce5a7);
+  --accent-ink: color-mix(in srgb, var(--accent) 18%, #01120b);
+  --glass: rgba(10, 36, 114, 0.42);
+  --line: rgba(77, 138, 255, 0.22);
+}
+[data-theme='light'] { --text: #0a1f44; --text-2: #3e4a74; --text-3: #7b84a8; --glass: rgba(255, 255, 255, 0.85); --line: rgba(10, 31, 68, 0.12); }
+
+* { box-sizing: border-box; }
+/* Never size from JS innerHeight at start-up (a WebView can report 0): percentage heights instead. */
+html, body, #app { height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
+body { background: var(--srk-bg, #050a20); color: var(--text); font-family: var(--font); line-height: 1.5; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; padding: 0; }
+.mono { font-family: var(--mono); font-size: 0.92em; }
+
+.app { position: relative; height: 100%; display: flex; flex-direction: column-reverse; }
+.app > .nav, .app > .main { position: relative; z-index: 1; }
+/* The scrolling pane: height from flex, min-height 0, so it scrolls instead of growing. */
+.main { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+
+/* The nav is a deep panel cut from the scene's own ground (never a flat grey): it darkens the
+   travelling --srk-bg, keeps a hairline of the live accent, and marks the current tab with an
+   accent pill (plus a glowing edge bar on the rail). */
+.nav {
+  --nav-ground: color-mix(in srgb, var(--srk-bg, #050a20) 72%, #00020d);
+  flex: none; display: flex; justify-content: space-around; padding: 6px 8px calc(6px + var(--sab));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nav-ground) 86%, transparent), var(--nav-ground));
+  backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  border-top: 1px solid color-mix(in srgb, var(--accent) 16%, rgba(77, 138, 255, 0.18));
+  box-shadow: 0 -18px 40px -24px rgba(0, 0, 0, 0.7); transition: background 900ms var(--srk-ease);
+}
+.nav-item { position: relative; flex: 1; display: grid; justify-items: center; gap: 3px; padding: 6px 0; color: rgba(234, 240, 255, 0.62); font-size: 11px; font-weight: 600; letter-spacing: 0.01em; }
+.nav-icon { width: 56px; height: 32px; border-radius: 999px; display: grid; place-items: center; transition: background 220ms, box-shadow 220ms, transform 200ms var(--srk-spring); }
+.nav-item:active .nav-icon { transform: scale(0.94); }
+.nav-item.on { color: #fff; }
+.nav-item.on .nav-icon { background: color-mix(in srgb, var(--accent) 17%, transparent); color: var(--accent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent), 0 6px 22px -8px color-mix(in srgb, var(--accent) 70%, transparent); }
+[data-theme='light'] .nav { --nav-ground: rgba(255, 255, 255, 0.92); background: var(--nav-ground); border-color: rgba(10, 31, 68, 0.08); }
+[data-theme='light'] .nav-item { color: #5b6390; }
+[data-theme='light'] .nav-item.on { color: #0a1f44; }
+
+.scene, .page { width: 100%; max-width: 1180px; margin: 0 auto; display: grid; gap: 16px; align-content: start; padding: calc(var(--sat) + 18px) calc(18px + var(--sar)) 44px calc(18px + var(--sal)); }
+.scene + .scene { padding-top: 56px; }
+.top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.lockup { display: inline-flex; align-items: center; gap: 10px; }
+.lockup b { font-weight: 500; font-size: 22px; letter-spacing: -0.01em; }
+.display { margin: 0; font-size: clamp(40px, 11.5vw, 68px); line-height: 1.02; font-weight: 600; letter-spacing: -0.03em; text-wrap: balance; }
+.display-m { margin: 0; font-size: clamp(30px, 8.4vw, 46px); line-height: 1.05; font-weight: 600; letter-spacing: -0.025em; text-wrap: balance; }
+.lede { margin: 0; font-size: 17px; color: var(--text-2); max-width: 46ch; }
+.note { margin: 0; font-size: 14px; color: var(--text-3); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+
+/* Buttons: the site's pills. Primary takes the live accent with dark ink; secondary is outlined. */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 26px; border-radius: 999px; font-weight: 600; font-size: 16px; text-decoration: none; transition: transform 260ms var(--srk-spring); }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 10px 30px -12px var(--accent); }
+.btn-ghost { color: var(--text); box-shadow: inset 0 0 0 1px rgba(234, 240, 255, 0.32); }
+.pill { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; background: rgba(234, 240, 255, 0.08); font-size: 13px; font-weight: 600; color: var(--text-2); }
+
+/* Glass: the site's card treatment. */
+.glass { background: var(--glass); border: 1px solid var(--line); border-radius: 18px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.cards { display: grid; gap: 10px; margin-top: 6px; }
+.card { display: grid; gap: 6px; padding: 18px; }
+.card b { font-size: 17px; font-weight: 600; }
+.card p { margin: 0; color: var(--text-2); font-size: 14.5px; }
+.addr { display: grid; gap: 2px; padding: 14px 16px; text-align: left; }
+.addr small { color: var(--text-3); }
+.idcard { display: flex; align-items: center; gap: 14px; padding: 16px; }
+.avatar { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #3458e0, #0a2472); flex: none; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.facts { margin: 0; padding: 6px 16px; }
+.facts div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.facts div:last-child { border-bottom: 0; }
+.facts dt { color: var(--text-3); }
+.facts dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+
+/* The Get ShareRing Me landing (screens/GetApp.tsx): store buttons with a two-line label, numbered steps. */
+.get-app { max-width: 880px; }
+.store span { display: grid; line-height: 1.1; text-align: left; }
+.store small { font-size: 11px; font-weight: 500; opacity: 0.8; }
+.steps { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 10px; }
+.step-n { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--accent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent); }
+
+/* Foldables (Z Fold 7 inner screen is 749x832 CSS px), tablets, landscape: a rail and wider grids. */
+@media (min-width: 600px) and (min-aspect-ratio: 5/6) {
+  .app { flex-direction: row; }
+  .nav { flex-direction: column; justify-content: flex-start; gap: 8px; width: 88px; padding: calc(var(--sat) + 14px) 0 calc(14px + var(--sab)); border-top: 0;
+    background: linear-gradient(90deg, var(--nav-ground), color-mix(in srgb, var(--nav-ground) 84%, transparent));
+    border-right: 1px solid color-mix(in srgb, var(--accent) 16%, rgba(77, 138, 255, 0.18)); box-shadow: 18px 0 44px -26px rgba(0, 0, 0, 0.75); }
+  .nav-item { flex: none; }
+  .nav-item.on::before { content: ''; position: absolute; left: 0; top: 50%; width: 3px; height: 30px; margin-top: -22px; border-radius: 0 3px 3px 0; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+  [data-theme='light'] .nav { background: var(--nav-ground); }
+  .scene, .page { padding-left: 32px; padding-right: calc(32px + var(--sar)); }
+  .cards, .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }

@@ -1,0 +1,11 @@
+node_modules
+dist
+data
+test-results
+shots
+.work
+.git
+# Secrets never go into the build context (compose passes .env to the container at run time).
+.env
+.env.*
+!.env.example
